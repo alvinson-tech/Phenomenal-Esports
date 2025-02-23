@@ -6,7 +6,7 @@
     <title>Phenomenal Esports</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Previous CSS remains the same until the buttons section */
+        /* Previous CSS remains the same */
         * {
             margin: 0;
             padding: 0;
@@ -118,7 +118,7 @@
         .buttons {
             display: flex;
             justify-content: center;
-            margin-top: 1rem;
+            margin: 1rem 0;
         }
 
         button {
@@ -140,16 +140,16 @@
             box-shadow: 0 5px 15px rgba(52,152,219,0.3);
         }
 
-        thead tr:first-child th {
-            position: sticky;
-            top: 0;
-            z-index: 2;
+        .summary-table {
+            margin-top: 2rem;
+            display: none;
         }
 
-        thead tr:nth-child(2) th {
-            position: sticky;
-            top: 37px;
-            z-index: 2;
+        .summary-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-family: 'Space Mono', monospace;
         }
 
         .footer {
@@ -161,10 +161,70 @@
             font-size: 0.8rem;
         }
 
-        /* Add styles for invalid input */
-        input:invalid {
-            border-color: #e74c3c;
-            background-color: #fff5f5;
+        .template-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .template-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-item:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .template-item.selected {
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px #3498db;
+        }
+
+        .template-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            display: none;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .template-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .download-btn {
+            background: #27ae60;
+            margin-left: 1rem;
+        }
+
+        .download-btn:hover {
+            background: #219a52;
         }
     </style>
 </head>
@@ -176,6 +236,7 @@
         </div>
         <div class="table-container">
             <table id="leaderboard">
+                <!-- Previous table structure remains the same -->
                 <thead>
                     <tr>
                         <th class="rank-col" style="display: none;">Rank</th>
@@ -214,6 +275,46 @@
         <div class="buttons">
             <button onclick="calculateResults()">Calculate Results</button>
         </div>
+
+        <!-- New Summary Table -->
+        <div id="summaryContainer" class="summary-table">
+            <h2 class="summary-title">Tournament Summary</h2>
+            <div class="table-container">
+                <table id="summaryTable">
+                    <thead>
+                        <tr>
+                            <th class="rank-col">Rank</th>
+                            <th class="team-col">Team Name</th>
+                            <th class="small-col">Wins</th>
+                            <th class="small-col">Matches</th>
+                            <th class="total-col">P_Total</th>
+                            <th class="total-col">K_Total</th>
+                            <th class="total-col">Final Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="templateSection" class="template-section">
+            <h2 class="template-title">Select Template Design</h2>
+            <div class="template-grid" id="templateGrid">
+                <!-- Templates will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Preview section -->
+        <div id="previewSection" class="preview-section">
+            <h2 class="template-title">Preview</h2>
+            <canvas id="previewCanvas" style="display: none;"></canvas>
+            <img id="previewImage" class="preview-image" />
+            <div class="buttons">
+                <button onclick="generateFinalImage()">Regenerate</button>
+                <button class="download-btn" onclick="downloadImage()">Download</button>
+            </div>
+        </div>
+
         <div class="footer">
             PHENOMENAL ESPORTS<br>
             © 2025 | ALL RIGHTS RESERVED
@@ -221,7 +322,7 @@
     </div>
 
     <script>
-        // Add refresh confirmation
+        // Previous JavaScript functions remain the same
         window.addEventListener('beforeunload', function(e) {
             e.preventDefault();
             e.returnValue = '';
@@ -234,142 +335,308 @@
             }
         }
 
-        function createRow(tbody) {
-            const row = document.createElement('tr');
+        function updateSummaryTable(rows) {
+            const summaryTableBody = document.getElementById('summaryTableBody');
+            summaryTableBody.innerHTML = '';
             
-            // Rank column (hidden initially)
-            const rankTd = document.createElement('td');
-            rankTd.style.display = 'none';
-            rankTd.className = 'rank-col rank';
-            row.appendChild(rankTd);
-
-            // Name, Phone, Team Name
-            const columnClasses = ['name-col', 'phone-col', 'team-col', 'small-col', 'small-col'];
-            columnClasses.forEach((className, index) => {
-                const td = document.createElement('td');
-                td.className = className;
-                const input = document.createElement('input');
-                input.type = 'text';
-                if (index >= 3) { // For Wins and Matches columns
-                    input.type = 'number';
-                    input.min = '0';
-                    input.onkeydown = (e) => {
-                        if (e.key === '-' || e.key === 'e' || e.key === '.') {
-                            e.preventDefault();
-                        }
-                    };
-                }
-                td.appendChild(input);
-                row.appendChild(td);
-            });
-
-            // Placement (6 + total)
-            for(let j = 0; j < 7; j++) {
-                const td = document.createElement('td');
-                td.className = 'small-col';
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.min = '0';
-                input.onkeydown = (e) => {
-                    if (e.key === '-' || e.key === 'e' || e.key === '.') {
-                        e.preventDefault();
-                    }
-                };
-                if(j === 6) {
-                    input.readOnly = true;
-                    input.className = 'p-total';
-                    td.className = 'total-col';
-                } else {
-                    input.className = 'placement';
-                }
-                td.appendChild(input);
-                row.appendChild(td);
-            }
-
-            // Kills (6 + total)
-            for(let j = 0; j < 7; j++) {
-                const td = document.createElement('td');
-                td.className = 'small-col';
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.min = '0';
-                input.onkeydown = (e) => {
-                    if (e.key === '-' || e.key === 'e' || e.key === '.') {
-                        e.preventDefault();
-                    }
-                };
-                if(j === 6) {
-                    input.readOnly = true;
-                    input.className = 'k-total';
-                    td.className = 'total-col';
-                } else {
-                    input.className = 'kills';
-                }
-                td.appendChild(input);
-                row.appendChild(td);
-            }
-
-            // Final Total
-            const finalTd = document.createElement('td');
-            finalTd.className = 'total-col';
-            const finalInput = document.createElement('input');
-            finalInput.readOnly = true;
-            finalInput.className = 'final-total';
-            finalTd.appendChild(finalInput);
-            row.appendChild(finalTd);
-
-            tbody.appendChild(row);
-
-            // Add event listeners
-            row.querySelectorAll('.placement, .kills').forEach(input => {
-                input.addEventListener('input', () => calculateRowTotals(row));
-            });
-        }
-
-        function calculateRowTotals(row) {
-            const placementInputs = row.querySelectorAll('.placement');
-            let placementTotal = 0;
-            placementInputs.forEach(input => {
-                placementTotal += input.value ? parseInt(input.value) : 0;
-            });
-            row.querySelector('.p-total').value = placementTotal;
-
-            const killInputs = row.querySelectorAll('.kills');
-            let killsTotal = 0;
-            killInputs.forEach(input => {
-                killsTotal += input.value ? parseInt(input.value) : 0;
-            });
-            row.querySelector('.k-total').value = killsTotal;
-
-            row.querySelector('.final-total').value = placementTotal + killsTotal;
-        }
-
-        function calculateResults() {
-            document.querySelectorAll('.rank-col').forEach(el => {
-                el.style.display = '';
-            });
-
-            const tbody = document.getElementById('tableBody');
-            const rows = Array.from(tbody.getElementsByTagName('tr'));
-
-            rows.sort((a, b) => {
-                const aTotal = parseInt(a.querySelector('.final-total').value) || 0;
-                const bTotal = parseInt(b.querySelector('.final-total').value) || 0;
-                return bTotal - aTotal;
-            });
-
-            rows.forEach(row => {
-                row.classList.remove('rank-1', 'rank-2', 'rank-3');
-            });
-
             rows.forEach((row, index) => {
-                tbody.appendChild(row);
-                row.querySelector('.rank').textContent = index + 1;
-                
-                if (index === 0) row.classList.add('rank-1');
-                if (index === 1) row.classList.add('rank-2');
-                if (index === 2) row.classList.add('rank-3');
+                const summaryRow = document.createElement('tr');
+                if (index === 0) summaryRow.classList.add('rank-1');
+                if (index === 1) summaryRow.classList.add('rank-2');
+                if (index === 2) summaryRow.classList.add('rank-3');
+
+                const rank = document.createElement('td');
+                rank.textContent = index + 1;
+                summaryRow.appendChild(rank);
+
+                const teamName = document.createElement('td');
+                teamName.textContent = row.querySelector('td:nth-child(4) input').value;
+                summaryRow.appendChild(teamName);
+
+                const wins = document.createElement('td');
+                wins.textContent = row.querySelector('td:nth-child(5) input').value;
+                summaryRow.appendChild(wins);
+
+                const matches = document.createElement('td');
+                matches.textContent = row.querySelector('td:nth-child(6) input').value;
+                summaryRow.appendChild(matches);
+
+                const pTotal = document.createElement('td');
+                pTotal.textContent = row.querySelector('.p-total').value;
+                summaryRow.appendChild(pTotal);
+
+                const kTotal = document.createElement('td');
+                kTotal.textContent = row.querySelector('.k-total').value;
+                summaryRow.appendChild(kTotal);
+
+                const finalTotal = document.createElement('td');
+                finalTotal.textContent = row.querySelector('.final-total').value;
+                summaryRow.appendChild(finalTotal);
+
+                summaryTableBody.appendChild(summaryRow);
             });
+
+            document.getElementById('summaryContainer').style.display = 'block';
+        }
+
+        function createRow(tbody) {
+    const row = document.createElement('tr');
+    
+    // Rank column (hidden initially)
+    const rankTd = document.createElement('td');
+    rankTd.style.display = 'none';
+    rankTd.className = 'rank-col rank';
+    row.appendChild(rankTd);
+
+    // Name, Phone, Team Name
+    ['name-col', 'phone-col', 'team-col', 'small-col', 'small-col'].forEach((className, index) => {
+        const td = document.createElement('td');
+        td.className = className;
+        const input = document.createElement('input');
+        input.type = index >= 3 ? 'number' : 'text';
+        if (index >= 3) {
+            input.min = '0';
+            input.addEventListener('input', () => calculateRowTotals(row));
+        }
+        td.appendChild(input);
+        row.appendChild(td);
+    });
+
+    // Placement (6 + total)
+    for(let j = 0; j < 7; j++) {
+        const td = document.createElement('td');
+        td.className = j === 6 ? 'total-col' : 'small-col';
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        
+        if(j === 6) {
+            input.readOnly = true;
+            input.className = 'p-total';
+        } else {
+            input.className = 'placement';
+            input.addEventListener('input', () => calculateRowTotals(row));
+        }
+        td.appendChild(input);
+        row.appendChild(td);
+    }
+
+    // Kills (6 + total)
+    for(let j = 0; j < 7; j++) {
+        const td = document.createElement('td');
+        td.className = j === 6 ? 'total-col' : 'small-col';
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        
+        if(j === 6) {
+            input.readOnly = true;
+            input.className = 'k-total';
+        } else {
+            input.className = 'kills';
+            input.addEventListener('input', () => calculateRowTotals(row));
+        }
+        td.appendChild(input);
+        row.appendChild(td);
+    }
+
+    // Final Total
+    const finalTd = document.createElement('td');
+    finalTd.className = 'total-col';
+    const finalInput = document.createElement('input');
+    finalInput.readOnly = true;
+    finalInput.className = 'final-total';
+    finalTd.appendChild(finalInput);
+    row.appendChild(finalTd);
+
+    tbody.appendChild(row);
+}
+
+function calculateRowTotals(row) {
+    // Calculate placement total
+    const placementInputs = Array.from(row.querySelectorAll('.placement'));
+    const placementTotal = placementInputs.reduce((sum, input) => {
+        return sum + (parseInt(input.value) || 0);
+    }, 0);
+    row.querySelector('.p-total').value = placementTotal || '';
+
+    // Calculate kills total
+    const killInputs = Array.from(row.querySelectorAll('.kills'));
+    const killsTotal = killInputs.reduce((sum, input) => {
+        return sum + (parseInt(input.value) || 0);
+    }, 0);
+    row.querySelector('.k-total').value = killsTotal || '';
+
+    // Update final total
+    const finalTotal = placementTotal + killsTotal;
+    row.querySelector('.final-total').value = finalTotal || '';
+}
+
+function calculateResults() {
+    // Show rank columns
+    document.querySelectorAll('.rank-col').forEach(el => {
+        el.style.display = '';
+    });
+
+    const tbody = document.getElementById('tableBody');
+    const rows = Array.from(tbody.getElementsByTagName('tr'));
+
+    // Sort rows by final total
+    rows.sort((a, b) => {
+        const aTotal = parseInt(a.querySelector('.final-total').value) || 0;
+        const bTotal = parseInt(b.querySelector('.final-total').value) || 0;
+        return bTotal - aTotal;
+    });
+
+    // Remove existing rank classes
+    rows.forEach(row => {
+        row.classList.remove('rank-1', 'rank-2', 'rank-3');
+    });
+
+    // Update main table
+    rows.forEach((row, index) => {
+        tbody.appendChild(row);
+        row.querySelector('.rank').textContent = index + 1;
+        
+        if (index === 0) row.classList.add('rank-1');
+        if (index === 1) row.classList.add('rank-2');
+        if (index === 2) row.classList.add('rank-3');
+    });
+
+    // Update summary table
+    updateSummaryTable(rows);
+// Show template section
+document.getElementById('templateSection').style.display = 'block';
+            
+            // Initialize templates if not already done
+            initializeTemplates();
+        }
+
+        // New functions for template handling
+        function initializeTemplates() {
+            const templateGrid = document.getElementById('templateGrid');
+            templateGrid.innerHTML = '';
+            
+            // Create 6 template items
+            for(let i = 1; i <= 6; i++) {
+                const templateItem = document.createElement('div');
+                templateItem.className = 'template-item';
+                templateItem.onclick = () => selectTemplate(i);
+                
+                const img = document.createElement('img');
+                img.src = `${i}.png`;
+                img.alt = `Template ${i}`;
+                
+                templateItem.appendChild(img);
+                templateGrid.appendChild(templateItem);
+            }
+        }
+
+        function selectTemplate(templateId) {
+            // Remove previous selection
+            document.querySelectorAll('.template-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection to clicked template
+            const selectedItem = document.querySelector(`.template-item:nth-child(${templateId})`);
+            selectedItem.classList.add('selected');
+            
+            // Generate preview
+            generatePreview(templateId);
+        }
+
+        function generatePreview(templateId) {
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    const previewImage = document.getElementById('previewImage');
+    
+    // Load template image
+    const templateImg = new Image();
+    templateImg.src = `${templateId}.png`;
+    
+    templateImg.onload = () => {
+        // Set canvas dimensions to match template
+        canvas.width = templateImg.width;
+        canvas.height = templateImg.height;
+        
+        // Draw template
+        ctx.drawImage(templateImg, 0, 0);
+        
+        // Get summary table data
+        const summaryTable = document.getElementById('summaryTableBody');
+        const rows = Array.from(summaryTable.getElementsByTagName('tr'));
+        
+        // Set text styles
+        ctx.font = 'bold 20px "Space Mono"';
+        ctx.fillStyle = '#000000'; // White text color
+        ctx.textAlign = 'center';
+        
+        // Define column positions (x coordinates)
+        const columnPositions = {
+            rank: 177,    // Rank column
+            team: 400,    // Team Name column
+            wins: 572,    // Wins column
+            match: 652,   // Match column
+            place: 732,   // Place column
+            kills: 812,   // Kills column
+            total: 905    // Total column
+        };
+        
+        // Starting Y position for the first row
+        const startY = 507;
+        // Space between rows
+        const rowHeight = 40;
+        
+        // Draw table data
+        rows.forEach((row, index) => {
+            const cells = Array.from(row.getElementsByTagName('td'));
+            const y = startY + (index * rowHeight);
+            
+            // Draw each cell in the row
+            cells.forEach((cell, cellIndex) => {
+                let x;
+                switch(cellIndex) {
+                    case 0: x = columnPositions.rank; break;  // Rank
+                    case 1: x = columnPositions.team; break;  // Team Name
+                    case 2: x = columnPositions.wins; break;  // Wins
+                    case 3: x = columnPositions.match; break; // Match
+                    case 4: x = columnPositions.place; break; // Place Total
+                    case 5: x = columnPositions.kills; break; // Kills Total
+                    case 6: x = columnPositions.total; break; // Final Total
+                }
+                
+                // Adjust text alignment for team names
+                if (cellIndex === 1) { // Team Name column
+                    ctx.textAlign = 'left';
+                    x = x - 150; // Adjust for left alignment
+                } else {
+                    ctx.textAlign = 'center';
+                }
+                
+                ctx.fillText(cell.textContent, x, y);
+            });
+        });
+        
+        // Show preview
+        previewImage.src = canvas.toDataURL('image/png');
+        document.getElementById('previewSection').style.display = 'block';
+    };
+}
+
+        function generateFinalImage() {
+            const selectedTemplate = document.querySelector('.template-item.selected');
+            if (selectedTemplate) {
+                const templateId = Array.from(selectedTemplate.parentNode.children).indexOf(selectedTemplate) + 1;
+                generatePreview(templateId);
+            }
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'tournament-results.png';
+            link.href = document.getElementById('previewImage').src;
+            link.click();
         }
     </script>
 </body>
