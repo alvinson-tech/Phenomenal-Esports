@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phenomenal Esports</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        body {
+            color: #333;
+            padding: 1rem;
+            min-height: 100vh;
+            background-color: #f5f7fa;
+            background-image: 
+                linear-gradient(rgba(52, 152, 219, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(52, 152, 219, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            max-width: 98vw;
+            margin: 0 auto;
+            background: white;
+            padding: 1rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        .table-container {
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            font-weight: 400;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .rank-col { width: 60px; }
+        .name-col { width: 120px; }
+        .phone-col { width: 120px; }
+        .team-col { width: 120px; }
+        .small-col { width: 60px; }
+        .total-col { width: 80px; }
+
+        .rank-1 { background: rgba(255, 215, 0, 0.2) !important; }
+        .rank-2 { background: rgba(192, 192, 192, 0.2) !important; }
+        .rank-3 { background: rgba(205, 127, 50, 0.2) !important; }
+
+        input {
+            width: 100%;
+            max-width: 100%;
+            padding: 4px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.85rem;
+            min-width: 50px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52,152,219,0.3);
+        }
+
+        input[readonly] {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            font-family: 'Space Mono', monospace;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        thead tr:first-child th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        thead tr:nth-child(2) th {
+            position: sticky;
+            top: 37px;
+            z-index: 2;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: #7f8c8d;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">PHENOMENAL ESPORTS</h1>
+            <p class="subtitle">Free Fire Tournament Leaderboard</p>
+        </div>
+        <div class="table-container">
+            <table id="leaderboard">
+                <thead>
+                    <tr>
+                        <th class="rank-col" style="display: none;">Rank</th>
+                        <th class="name-col">Name</th>
+                        <th class="phone-col">Phone Number</th>
+                        <th class="team-col">Team Name</th>
+                        <th class="small-col">Wins</th>
+                        <th class="small-col">Matches</th>
+                        <th class="small-col" colspan="7">Placement</th>
+                        <th class="small-col" colspan="7">Kills</th>
+                        <th class="total-col">Final Total</th>
+                    </tr>
+                    <tr>
+                        <th class="rank-col" style="display: none;"></th>
+                        <th colspan="5"></th>
+                        <th class="small-col">1</th>
+                        <th class="small-col">2</th>
+                        <th class="small-col">3</th>
+                        <th class="small-col">4</th>
+                        <th class="small-col">5</th>
+                        <th class="small-col">6</th>
+                        <th class="total-col">P_Total</th>
+                        <th class="small-col">1</th>
+                        <th class="small-col">2</th>
+                        <th class="small-col">3</th>
+                        <th class="small-col">4</th>
+                        <th class="small-col">5</th>
+                        <th class="small-col">6</th>
+                        <th class="total-col">K_Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        <div class="buttons">
+            <button onclick="calculateResults()">Calculate Results</button>
+            <button onclick="downloadImage()">Download as Image</button>
+        </div>
+        <div class="footer">
+            PHENOMENAL ESPORTS<br>
+            © 2025 | ALL RIGHTS RESERVED
+        </div>
+    </div>
+
+    <script>
+        // [Previous JavaScript code remains exactly the same]
+        window.onload = function() {
+            const tbody = document.getElementById('tableBody');
+            for(let i = 0; i < 12; i++) {
+                createRow(tbody);
+            }
+        }
+
+        function createRow(tbody) {
+            const row = document.createElement('tr');
+            
+            // Rank column (hidden initially)
+            const rankTd = document.createElement('td');
+            rankTd.style.display = 'none';
+            rankTd.className = 'rank-col rank';
+            row.appendChild(rankTd);
+
+            // Name, Phone, Team Name, Wins, Matches
+            const columnClasses = ['name-col', 'phone-col', 'team-col', 'small-col', 'small-col'];
+            columnClasses.forEach(className => {
+                const td = document.createElement('td');
+                td.className = className;
+                const input = document.createElement('input');
+                input.type = 'text';
+                td.appendChild(input);
+                row.appendChild(td);
+            });
+
+            // Placement (6 + total)
+            for(let j = 0; j < 7; j++) {
+                const td = document.createElement('td');
+                td.className = 'small-col';
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = '0';
+                if(j === 6) {
+                    input.readOnly = true;
+                    input.className = 'p-total';
+                    td.className = 'total-col';
+                } else {
+                    input.className = 'placement';
+                }
+                td.appendChild(input);
+                row.appendChild(td);
+            }
+
+            // Kills (6 + total)
+            for(let j = 0; j < 7; j++) {
+                const td = document.createElement('td');
+                td.className = 'small-col';
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = '0';
+                if(j === 6) {
+                    input.readOnly = true;
+                    input.className = 'k-total';
+                    td.className = 'total-col';
+                } else {
+                    input.className = 'kills';
+                }
+                td.appendChild(input);
+                row.appendChild(td);
+            }
+
+            // Final Total
+            const finalTd = document.createElement('td');
+            finalTd.className = 'total-col';
+            const finalInput = document.createElement('input');
+            finalInput.readOnly = true;
+            finalInput.className = 'final-total';
+            finalTd.appendChild(finalInput);
+            row.appendChild(finalTd);
+
+            tbody.appendChild(row);
+
+            // Add event listeners
+            row.querySelectorAll('.placement, .kills').forEach(input => {
+                input.addEventListener('input', () => calculateRowTotals(row));
+            });
+        }
+
+        function calculateRowTotals(row) {
+            const placementInputs = row.querySelectorAll('.placement');
+            let placementTotal = 0;
+            placementInputs.forEach(input => {
+                placementTotal += input.value ? parseInt(input.value) : 0;
+            });
+            row.querySelector('.p-total').value = placementTotal;
+
+            const killInputs = row.querySelectorAll('.kills');
+            let killsTotal = 0;
+            killInputs.forEach(input => {
+                killsTotal += input.value ? parseInt(input.value) : 0;
+            });
+            row.querySelector('.k-total').value = killsTotal;
+
+            row.querySelector('.final-total').value = placementTotal + killsTotal;
+        }
+
+        function calculateResults() {
+            // Show rank column
+            document.querySelectorAll('.rank-col').forEach(el => {
+                el.style.display = '';
+            });
+
+            // Get all rows and convert to array for sorting
+            const tbody = document.getElementById('tableBody');
+            const rows = Array.from(tbody.getElementsByTagName('tr'));
+
+            // Sort rows by final total
+            rows.sort((a, b) => {
+                const aTotal = parseInt(a.querySelector('.final-total').value) || 0;
+                const bTotal = parseInt(b.querySelector('.final-total').value) || 0;
+                return bTotal - aTotal;
+            });
+
+            // Remove existing rank classes
+            rows.forEach(row => {
+                row.classList.remove('rank-1', 'rank-2', 'rank-3');
+            });
+
+            // Reorder rows and add ranks
+            rows.forEach((row, index) => {
+                tbody.appendChild(row);
+                row.querySelector('.rank').textContent = index + 1;
+                
+                if (index === 0) row.classList.add('rank-1');
+                if (index === 1) row.classList.add('rank-2');
+                if (index === 2) row.classList.add('rank-3');
+            });
+        }
+
+        function downloadImage() {
+            html2canvas(document.querySelector("#leaderboard")).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'phenomenal-esports-leaderboard.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
