@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phenomenal Esports</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Add this preconnect for better font loading performance -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Previous CSS remains the same */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Lexend', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
@@ -23,6 +25,14 @@
                 linear-gradient(rgba(52, 152, 219, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(52, 152, 219, 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
+        }
+
+        .title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
         }
 
         .container {
@@ -37,14 +47,6 @@
         .header {
             text-align: center;
             margin-bottom: 1rem;
-        }
-
-        .title {
-            font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 0.3rem;
-            font-weight: 600;
-            font-family: 'Space Mono', monospace;
         }
 
         .subtitle {
@@ -78,7 +80,7 @@
             background: #3498db;
             color: white;
             font-weight: 400;
-            font-family: 'Space Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .rank-col { width: 60px; }
@@ -88,9 +90,9 @@
         .small-col { width: 60px; }
         .total-col { width: 80px; }
 
-        .rank-1 { background: rgba(255, 215, 0, 0.2) !important; }
-        .rank-2 { background: rgba(192, 192, 192, 0.2) !important; }
-        .rank-3 { background: rgba(205, 127, 50, 0.2) !important; }
+        .rank-1 { background: rgba(255, 217, 0, 0.256) !important; }
+        .rank-2 { background: rgba(192, 192, 192, 0.255) !important; }
+        .rank-3 { background: rgba(205, 128, 50, 0.237) !important; }
 
         input {
             width: 100%;
@@ -101,7 +103,7 @@
             text-align: center;
             font-size: 0.85rem;
             min-width: 50px;
-            font-family: 'Space Mono', monospace;
+            font-family: 'Inter', sans-serif;
         }
 
         input:focus {
@@ -131,7 +133,7 @@
             border-radius: 8px;
             transition: all 0.3s ease;
             font-weight: 400;
-            font-family: 'Space Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         button:hover {
@@ -149,7 +151,7 @@
             text-align: center;
             margin-bottom: 1rem;
             color: #2c3e50;
-            font-family: 'Space Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .footer {
@@ -157,7 +159,7 @@
             margin-top: 2rem;
             padding: 1rem;
             color: #7f8c8d;
-            font-family: 'Space Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 0.8rem;
         }
 
@@ -215,7 +217,7 @@
             text-align: center;
             margin-bottom: 1rem;
             color: #2c3e50;
-            font-family: 'Space Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .download-btn {
@@ -322,6 +324,25 @@
     </div>
 
     <script>
+        function loadFonts() {
+            const fonts = [
+                new FontFace('Space Mono', 'url(https://fonts.gstatic.com/s/spacemono/v12/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2)', {
+                    weight: '400'
+                }),
+                new FontFace('Space Mono Bold', 'url(https://fonts.gstatic.com/s/spacemono/v12/i7dMIFZifjKcF5UAWdDRYE98RXi4EwSsbg.woff2)', {
+                    weight: '700'
+                }),
+                // Add more fonts here as needed for different templates
+            ];
+
+            // Load all fonts
+            Promise.all(fonts.map(font => font.load())).then(loadedFonts => {
+                loadedFonts.forEach(font => document.fonts.add(font));
+            }).catch(error => {
+                console.error('Font loading failed:', error);
+            });
+        }
+
         // Previous JavaScript functions remain the same
         window.addEventListener('beforeunload', function(e) {
             e.preventDefault();
@@ -333,6 +354,9 @@
             for(let i = 0; i < 12; i++) {
                 createRow(tbody);
             }
+            
+            // Load fonts when the page loads
+            loadFonts();
         }
 
         function updateSummaryTable(rows) {
@@ -380,135 +404,150 @@
         }
 
         function createRow(tbody) {
-    const row = document.createElement('tr');
-    
-    // Rank column (hidden initially)
-    const rankTd = document.createElement('td');
-    rankTd.style.display = 'none';
-    rankTd.className = 'rank-col rank';
-    row.appendChild(rankTd);
-
-    // Name, Phone, Team Name
-    ['name-col', 'phone-col', 'team-col', 'small-col', 'small-col'].forEach((className, index) => {
-        const td = document.createElement('td');
-        td.className = className;
-        const input = document.createElement('input');
-        input.type = index >= 3 ? 'number' : 'text';
-        if (index >= 3) {
-            input.min = '0';
-            input.addEventListener('input', () => calculateRowTotals(row));
-        }
-        td.appendChild(input);
-        row.appendChild(td);
-    });
-
-    // Placement (6 + total)
-    for(let j = 0; j < 7; j++) {
-        const td = document.createElement('td');
-        td.className = j === 6 ? 'total-col' : 'small-col';
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = '0';
-        
-        if(j === 6) {
-            input.readOnly = true;
-            input.className = 'p-total';
-        } else {
-            input.className = 'placement';
-            input.addEventListener('input', () => calculateRowTotals(row));
-        }
-        td.appendChild(input);
-        row.appendChild(td);
-    }
-
-    // Kills (6 + total)
-    for(let j = 0; j < 7; j++) {
-        const td = document.createElement('td');
-        td.className = j === 6 ? 'total-col' : 'small-col';
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = '0';
-        
-        if(j === 6) {
-            input.readOnly = true;
-            input.className = 'k-total';
-        } else {
-            input.className = 'kills';
-            input.addEventListener('input', () => calculateRowTotals(row));
-        }
-        td.appendChild(input);
-        row.appendChild(td);
-    }
-
-    // Final Total
-    const finalTd = document.createElement('td');
-    finalTd.className = 'total-col';
-    const finalInput = document.createElement('input');
-    finalInput.readOnly = true;
-    finalInput.className = 'final-total';
-    finalTd.appendChild(finalInput);
-    row.appendChild(finalTd);
-
-    tbody.appendChild(row);
-}
-
-function calculateRowTotals(row) {
-    // Calculate placement total
-    const placementInputs = Array.from(row.querySelectorAll('.placement'));
-    const placementTotal = placementInputs.reduce((sum, input) => {
-        return sum + (parseInt(input.value) || 0);
-    }, 0);
-    row.querySelector('.p-total').value = placementTotal || '';
-
-    // Calculate kills total
-    const killInputs = Array.from(row.querySelectorAll('.kills'));
-    const killsTotal = killInputs.reduce((sum, input) => {
-        return sum + (parseInt(input.value) || 0);
-    }, 0);
-    row.querySelector('.k-total').value = killsTotal || '';
-
-    // Update final total
-    const finalTotal = placementTotal + killsTotal;
-    row.querySelector('.final-total').value = finalTotal || '';
-}
-
-function calculateResults() {
-    // Show rank columns
-    document.querySelectorAll('.rank-col').forEach(el => {
-        el.style.display = '';
-    });
-
-    const tbody = document.getElementById('tableBody');
-    const rows = Array.from(tbody.getElementsByTagName('tr'));
-
-    // Sort rows by final total
-    rows.sort((a, b) => {
-        const aTotal = parseInt(a.querySelector('.final-total').value) || 0;
-        const bTotal = parseInt(b.querySelector('.final-total').value) || 0;
-        return bTotal - aTotal;
-    });
-
-    // Remove existing rank classes
-    rows.forEach(row => {
-        row.classList.remove('rank-1', 'rank-2', 'rank-3');
-    });
-
-    // Update main table
-    rows.forEach((row, index) => {
-        tbody.appendChild(row);
-        row.querySelector('.rank').textContent = index + 1;
-        
-        if (index === 0) row.classList.add('rank-1');
-        if (index === 1) row.classList.add('rank-2');
-        if (index === 2) row.classList.add('rank-3');
-    });
-
-    // Update summary table
-    updateSummaryTable(rows);
-// Show template section
-document.getElementById('templateSection').style.display = 'block';
+            const row = document.createElement('tr');
             
-            // Initialize templates if not already done
+            // Rank column (hidden initially)
+            const rankTd = document.createElement('td');
+            rankTd.style.display = 'none';
+            rankTd.className = 'rank-col rank';
+            row.appendChild(rankTd);
+
+            // Name, Phone, Team Name
+            ['name-col', 'phone-col', 'team-col', 'small-col', 'small-col'].forEach((className, index) => {
+                const td = document.createElement('td');
+                td.className = className;
+                const input = document.createElement('input');
+                input.type = index >= 3 ? 'number' : 'text';
+                if (index >= 3) {
+                    input.min = '0';
+                    input.addEventListener('input', () => calculateRowTotals(row));
+                }
+                td.appendChild(input);
+                row.appendChild(td);
+            });
+
+            // Placement (6 + total)
+            for(let j = 0; j < 7; j++) {
+                const td = document.createElement('td');
+                td.className = j === 6 ? 'total-col' : 'small-col';
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = '0';
+                
+                if(j === 6) {
+                    input.readOnly = true;
+                    input.className = 'p-total';
+                } else {
+                    input.className = 'placement';
+                    input.addEventListener('input', () => calculateRowTotals(row));
+                }
+                td.appendChild(input);
+                row.appendChild(td);
+            }
+
+            // Kills (6 + total)
+            for(let j = 0; j < 7; j++) {
+                const td = document.createElement('td');
+                td.className = j === 6 ? 'total-col' : 'small-col';
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = '0';
+                
+                if(j === 6) {
+                    input.readOnly = true;
+                    input.className = 'k-total';
+                } else {
+                    input.className = 'kills';
+                    input.addEventListener('input', () => calculateRowTotals(row));
+                }
+                td.appendChild(input);
+                row.appendChild(td);
+            }
+
+            // Final Total
+            const finalTd = document.createElement('td');
+            finalTd.className = 'total-col';
+            const finalInput = document.createElement('input');
+            finalInput.readOnly = true;
+            finalInput.className = 'final-total';
+            finalTd.appendChild(finalInput);
+            row.appendChild(finalTd);
+
+            tbody.appendChild(row);
+        }
+
+        function calculateRowTotals(row) {
+            // Calculate placement total
+            const placementInputs = Array.from(row.querySelectorAll('.placement'));
+            const placementTotal = placementInputs.reduce((sum, input) => {
+                return sum + (parseInt(input.value) || 0);
+            }, 0);
+            row.querySelector('.p-total').value = placementTotal.toString(); // Always display 0 if total is 0
+
+            // Calculate kills total
+            const killInputs = Array.from(row.querySelectorAll('.kills'));
+            const killsTotal = killInputs.reduce((sum, input) => {
+                return sum + (parseInt(input.value) || 0);
+            }, 0);
+            row.querySelector('.k-total').value = killsTotal.toString(); // Always display 0 if total is 0
+
+            // Update final total
+            const finalTotal = placementTotal + killsTotal;
+            row.querySelector('.final-total').value = finalTotal.toString(); // Always display 0 if total is 0
+        }
+
+        function hasData(row) {
+            const inputs = row.querySelectorAll('input:not([readonly])');
+            return Array.from(inputs).some(input => input.value.trim() !== '');
+        }
+
+        function calculateResults() {
+            // Show rank columns
+            document.querySelectorAll('.rank-col').forEach(el => {
+                el.style.display = '';
+            });
+
+            const tbody = document.getElementById('tableBody');
+            const rows = Array.from(tbody.getElementsByTagName('tr'));
+
+            // Filter rows with data
+            const rowsWithData = rows.filter(hasData);
+
+            // Sort rows by final total
+            rowsWithData.sort((a, b) => {
+                const aTotal = parseInt(a.querySelector('.final-total').value) || 0;
+                const bTotal = parseInt(b.querySelector('.final-total').value) || 0;
+                return bTotal - aTotal;
+            });
+
+            // Remove existing rank classes from all rows
+            rows.forEach(row => {
+                row.classList.remove('rank-1', 'rank-2', 'rank-3');
+                row.querySelector('.rank').textContent = '';
+            });
+
+            // Update main table - only ranked rows with data
+            rowsWithData.forEach((row, index) => {
+                tbody.appendChild(row);
+                row.querySelector('.rank').textContent = index + 1;
+                
+                if (index === 0) row.classList.add('rank-1');
+                if (index === 1) row.classList.add('rank-2');
+                if (index === 2) row.classList.add('rank-3');
+            });
+
+            // Move empty rows to the end
+            rows.filter(row => !hasData(row)).forEach(row => {
+                tbody.appendChild(row);
+            });
+
+            // Update summary table with only rows containing data
+            updateSummaryTable(rowsWithData);
+            
+            // Show template section
+            document.getElementById('templateSection').style.display = 'block';
+            
+            // Initialize templates
             initializeTemplates();
         }
 
@@ -547,82 +586,174 @@ document.getElementById('templateSection').style.display = 'block';
         }
 
         function generatePreview(templateId) {
-    const canvas = document.getElementById('previewCanvas');
-    const ctx = canvas.getContext('2d');
-    const previewImage = document.getElementById('previewImage');
-    
-    // Load template image
-    const templateImg = new Image();
-    templateImg.src = `${templateId}.png`;
-    
-    templateImg.onload = () => {
-        // Set canvas dimensions to match template
-        canvas.width = templateImg.width;
-        canvas.height = templateImg.height;
-        
-        // Draw template
-        ctx.drawImage(templateImg, 0, 0);
-        
-        // Get summary table data
-        const summaryTable = document.getElementById('summaryTableBody');
-        const rows = Array.from(summaryTable.getElementsByTagName('tr'));
-        
-        // Set text styles
-        ctx.font = 'bold 20px "Space Mono"';
-        ctx.fillStyle = '#000000'; // White text color
-        ctx.textAlign = 'center';
-        
-        // Define column positions (x coordinates)
-        const columnPositions = {
-            rank: 177,    // Rank column
-            team: 400,    // Team Name column
-            wins: 572,    // Wins column
-            match: 652,   // Match column
-            place: 732,   // Place column
-            kills: 812,   // Kills column
-            total: 905    // Total column
-        };
-        
-        // Starting Y position for the first row
-        const startY = 507;
-        // Space between rows
-        const rowHeight = 40;
-        
-        // Draw table data
-        rows.forEach((row, index) => {
-            const cells = Array.from(row.getElementsByTagName('td'));
-            const y = startY + (index * rowHeight);
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+            const previewImage = document.getElementById('previewImage');
             
-            // Draw each cell in the row
-            cells.forEach((cell, cellIndex) => {
-                let x;
-                switch(cellIndex) {
-                    case 0: x = columnPositions.rank; break;  // Rank
-                    case 1: x = columnPositions.team; break;  // Team Name
-                    case 2: x = columnPositions.wins; break;  // Wins
-                    case 3: x = columnPositions.match; break; // Match
-                    case 4: x = columnPositions.place; break; // Place Total
-                    case 5: x = columnPositions.kills; break; // Kills Total
-                    case 6: x = columnPositions.total; break; // Final Total
+            // Template-specific configurations
+            const templateConfigs = {
+                1: {
+                    font: 'bold 20px "Space Mono"',
+                    color: '#000000',
+                    columns: {
+                        rank: 177,
+                        team: 400,
+                        wins: 572,
+                        match: 652,
+                        place: 732,
+                        kills: 812,
+                        total: 905
+                    },
+                    startY: 507,
+                    rowHeight: 40,
+                    teamNameOffset: 150
+                },
+                2: {
+                    // Same as template 1 for now
+                    font: 'bold 30px "Space Mono"',
+                    color: '#FFFFFF',
+                    columns: {
+                        rank: 413,
+                        team: 700,
+                        wins: 1065,
+                        match: 1215,
+                        place: 1365,
+                        kills: 1515,
+                        total: 1676
+                    },
+                    startY: 650,
+                    rowHeight: 89,
+                    teamNameOffset: 150
+                },
+                3: {
+                    // Same as template 1 for now
+                    font: 'bold 20px "Space Mono"',
+                    color: '#000000',
+                    columns: {
+                        rank: 177,
+                        team: 400,
+                        wins: 572,
+                        match: 652,
+                        place: 732,
+                        kills: 812,
+                        total: 905
+                    },
+                    startY: 507,
+                    rowHeight: 40,
+                    teamNameOffset: 150
+                },
+                4: {
+                    // Same as template 1 for now
+                    font: 'bold 20px "Space Mono"',
+                    color: '#000000',
+                    columns: {
+                        rank: 177,
+                        team: 400,
+                        wins: 572,
+                        match: 652,
+                        place: 732,
+                        kills: 812,
+                        total: 905
+                    },
+                    startY: 507,
+                    rowHeight: 40,
+                    teamNameOffset: 150
+                },
+                5: {
+                    // Same as template 1 for now
+                    font: 'bold 20px "Space Mono"',
+                    color: '#000000',
+                    columns: {
+                        rank: 177,
+                        team: 400,
+                        wins: 572,
+                        match: 652,
+                        place: 732,
+                        kills: 812,
+                        total: 905
+                    },
+                    startY: 507,
+                    rowHeight: 40,
+                    teamNameOffset: 150
+                },
+                6: {
+                    // Same as template 1 for now
+                    font: 'bold 20px "Space Mono"',
+                    color: '#000000',
+                    columns: {
+                        rank: 177,
+                        team: 400,
+                        wins: 572,
+                        match: 652,
+                        place: 732,
+                        kills: 812,
+                        total: 905
+                    },
+                    startY: 507,
+                    rowHeight: 40,
+                    teamNameOffset: 150
                 }
-                
-                // Adjust text alignment for team names
-                if (cellIndex === 1) { // Team Name column
-                    ctx.textAlign = 'left';
-                    x = x - 150; // Adjust for left alignment
-                } else {
+            };
+
+            // Load template image
+            const templateImg = new Image();
+            templateImg.src = `${templateId}.png`;
+            
+            templateImg.onload = () => {
+                // Wait for fonts to be loaded before drawing
+                document.fonts.ready.then(() => {
+                    const config = templateConfigs[templateId];
+                    
+                    // Set canvas dimensions to match template
+                    canvas.width = templateImg.width;
+                    canvas.height = templateImg.height;
+                    
+                    // Draw template
+                    ctx.drawImage(templateImg, 0, 0);
+                    
+                    // Get summary table data
+                    const summaryTable = document.getElementById('summaryTableBody');
+                    const rows = Array.from(summaryTable.getElementsByTagName('tr'));
+                    
+                    // Set text styles from template configuration
+                    ctx.font = config.font;
+                    ctx.fillStyle = config.color;
                     ctx.textAlign = 'center';
-                }
-                
-                ctx.fillText(cell.textContent, x, y);
-            });
-        });
-        
-        // Show preview
-        previewImage.src = canvas.toDataURL('image/png');
-        document.getElementById('previewSection').style.display = 'block';
-    };
-}
+                    
+                    // Draw table data
+                    rows.forEach((row, index) => {
+                        const cells = Array.from(row.getElementsByTagName('td'));
+                        const y = config.startY + (index * config.rowHeight);
+                        
+                        cells.forEach((cell, cellIndex) => {
+                            let x;
+                            switch(cellIndex) {
+                                case 0: x = config.columns.rank; break;
+                                case 1: x = config.columns.team; break;
+                                case 2: x = config.columns.wins; break;
+                                case 3: x = config.columns.match; break;
+                                case 4: x = config.columns.place; break;
+                                case 5: x = config.columns.kills; break;
+                                case 6: x = config.columns.total; break;
+                            }
+                            
+                            if (cellIndex === 1) {
+                                ctx.textAlign = 'left';
+                                x = x - config.teamNameOffset;
+                            } else {
+                                ctx.textAlign = 'center';
+                            }
+                            
+                            ctx.fillText(cell.textContent, x, y);
+                        });
+                    });
+                    
+                    // Show preview
+                    previewImage.src = canvas.toDataURL('image/png');
+                    document.getElementById('previewSection').style.display = 'block';
+                });
+            };
+        }
 
         function generateFinalImage() {
             const selectedTemplate = document.querySelector('.template-item.selected');
