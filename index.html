@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phenomenal Esports</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* Previous CSS remains the same until the buttons section */
         * {
             margin: 0;
             padding: 0;
@@ -117,7 +117,6 @@
 
         .buttons {
             display: flex;
-            gap: 1rem;
             justify-content: center;
             margin-top: 1rem;
         }
@@ -160,6 +159,12 @@
             color: #7f8c8d;
             font-family: 'Space Mono', monospace;
             font-size: 0.8rem;
+        }
+
+        /* Add styles for invalid input */
+        input:invalid {
+            border-color: #e74c3c;
+            background-color: #fff5f5;
         }
     </style>
 </head>
@@ -208,7 +213,6 @@
         </div>
         <div class="buttons">
             <button onclick="calculateResults()">Calculate Results</button>
-            <button onclick="downloadImage()">Download as Image</button>
         </div>
         <div class="footer">
             PHENOMENAL ESPORTS<br>
@@ -217,7 +221,12 @@
     </div>
 
     <script>
-        // [Previous JavaScript code remains exactly the same]
+        // Add refresh confirmation
+        window.addEventListener('beforeunload', function(e) {
+            e.preventDefault();
+            e.returnValue = '';
+        });
+
         window.onload = function() {
             const tbody = document.getElementById('tableBody');
             for(let i = 0; i < 12; i++) {
@@ -234,13 +243,22 @@
             rankTd.className = 'rank-col rank';
             row.appendChild(rankTd);
 
-            // Name, Phone, Team Name, Wins, Matches
+            // Name, Phone, Team Name
             const columnClasses = ['name-col', 'phone-col', 'team-col', 'small-col', 'small-col'];
-            columnClasses.forEach(className => {
+            columnClasses.forEach((className, index) => {
                 const td = document.createElement('td');
                 td.className = className;
                 const input = document.createElement('input');
                 input.type = 'text';
+                if (index >= 3) { // For Wins and Matches columns
+                    input.type = 'number';
+                    input.min = '0';
+                    input.onkeydown = (e) => {
+                        if (e.key === '-' || e.key === 'e' || e.key === '.') {
+                            e.preventDefault();
+                        }
+                    };
+                }
                 td.appendChild(input);
                 row.appendChild(td);
             });
@@ -252,6 +270,11 @@
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.min = '0';
+                input.onkeydown = (e) => {
+                    if (e.key === '-' || e.key === 'e' || e.key === '.') {
+                        e.preventDefault();
+                    }
+                };
                 if(j === 6) {
                     input.readOnly = true;
                     input.className = 'p-total';
@@ -270,6 +293,11 @@
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.min = '0';
+                input.onkeydown = (e) => {
+                    if (e.key === '-' || e.key === 'e' || e.key === '.') {
+                        e.preventDefault();
+                    }
+                };
                 if(j === 6) {
                     input.readOnly = true;
                     input.className = 'k-total';
@@ -317,28 +345,23 @@
         }
 
         function calculateResults() {
-            // Show rank column
             document.querySelectorAll('.rank-col').forEach(el => {
                 el.style.display = '';
             });
 
-            // Get all rows and convert to array for sorting
             const tbody = document.getElementById('tableBody');
             const rows = Array.from(tbody.getElementsByTagName('tr'));
 
-            // Sort rows by final total
             rows.sort((a, b) => {
                 const aTotal = parseInt(a.querySelector('.final-total').value) || 0;
                 const bTotal = parseInt(b.querySelector('.final-total').value) || 0;
                 return bTotal - aTotal;
             });
 
-            // Remove existing rank classes
             rows.forEach(row => {
                 row.classList.remove('rank-1', 'rank-2', 'rank-3');
             });
 
-            // Reorder rows and add ranks
             rows.forEach((row, index) => {
                 tbody.appendChild(row);
                 row.querySelector('.rank').textContent = index + 1;
@@ -346,15 +369,6 @@
                 if (index === 0) row.classList.add('rank-1');
                 if (index === 1) row.classList.add('rank-2');
                 if (index === 2) row.classList.add('rank-3');
-            });
-        }
-
-        function downloadImage() {
-            html2canvas(document.querySelector("#leaderboard")).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'phenomenal-esports-leaderboard.png';
-                link.href = canvas.toDataURL();
-                link.click();
             });
         }
     </script>
